@@ -1,0 +1,40 @@
+name: Executar Testes de Conclusao de Disciplina
+
+on:
+  # Permite a execução manual na aba Actions
+  workflow_dispatch:
+  
+  # Executa automaticamente ao receber novo código na branch main
+  push:
+    branches: [ "main" ]
+
+jobs:
+  testes:
+    # Configuração padrão de VM (Ubuntu Linux)
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Baixa o código do repositório para a VM
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      # 2. Configura o ambiente do Node.js
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/* # Usa a versão LTS mais recente estável
+
+      # 3. Instala todas as dependências (incluindo devDependencies)
+      - name: Instalar dependências (production e dev)
+        run: npm install
+
+      # 4. Inicia a API em segundo plano e espera ela carregar
+      - name: Iniciar a API
+        run: |
+          npm start &
+          echo "Aguardando 5 segundos para a API inicializar completamente..."
+          sleep 5
+
+      # 5. Executa a sua suíte de testes
+      - name: Rodar testes
+        run: npm test
