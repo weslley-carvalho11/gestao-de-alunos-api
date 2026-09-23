@@ -30,6 +30,10 @@ jobs:
 
       # 4. Inicia a API em segundo plano e espera ela carregar
       - name: Iniciar a API
+        env:
+          BASE_URL: http://localhost:3000
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_SENHA: ${{ secrets.ADMIN_SENHA }}
         run: |
           npm start &
           echo "Aguardando 5 segundos para a API inicializar completamente..."
