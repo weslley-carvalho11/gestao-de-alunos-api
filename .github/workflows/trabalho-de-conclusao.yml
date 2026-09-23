@@ -41,4 +41,8 @@ jobs:
 
       # 5. Executa a sua suíte de testes
       - name: Rodar testes
+        env:
+          BASE_URL: http://localhost:3000
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_SENHA: ${{ secrets.ADMIN_SENHA }}
         run: npm test
