@@ -1,63 +1,54 @@
 import { api } from '../helpers/api.js';
 import { comTokenAdmin, getToken } from '../helpers/auth.js';
-import { assert, expect } from 'chai';
-import { novoAluno } from '../factories/alunosFactory.js';
-import { novoTrabalho } from '../factories/trabalhoFactory.js';
+import { expect } from 'chai';
+import entregasDeTrabalho from '../fixtures/entregaDeTrabalho.json' with { type: 'json'};
 
 describe('Fluxo de Testes - Administrador', () => {
 
-    it('deve entragar o trabalho como aluno', async () => {
-        const tokenAdmin = await comTokenAdmin();
-        const aluno = novoAluno();
-        // console.log(aluno);
+    entregasDeTrabalho.forEach(entregaDeTrabalho => {
+        it(entregaDeTrabalho.titulo, async () => {
+            // console.log(entregaDeTrabalho.titulo);
+            const tokenAdmin = await comTokenAdmin();
 
-        const cadastroDeAluno = await api()
-            .post('/api/admin/alunos')
-            .set('Content-Type', 'application/json')
-            .set('Authorization', tokenAdmin)
-            .send(aluno);
-        // console.log(cadastroDeAluno.body);
-        // console.log(cadastroDeAluno.body.id);
+            const cadastroDeAluno = await api()
+                .post('/api/admin/alunos')
+                .set('Content-Type', 'application/json')
+                .set('Authorization', tokenAdmin)
+                .send(entregaDeTrabalho.aluno);
+            //   console.log(entregaDeTrabalho.aluno);
+            //   console.log(cadastroDeAluno.body);
 
-        const matriculaId = 'disciplina-historia';
-        const urlMatricula = `/api/admin/disciplinas/${matriculaId}/matriculas`;
-        // console.log(urlMatricula);
+            const urlMatricula = `/api/admin/disciplinas/${entregaDeTrabalho.trabalho.disciplinaId}/matriculas`;
+            // console.log(urlMatricula);
 
-        const matriculaAluno = await api()
-            .post(urlMatricula)
-            .set('Content-Type', 'application/json')
-            .set('Authorization', tokenAdmin)
-            .send(
-                {
-                    alunoId: cadastroDeAluno.body.id
-                }
-            );
-        // console.log(matriculaAluno.body);
+            const matriculaAluno = await api()
+                .post(urlMatricula)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', tokenAdmin)
+                .send(
+                    {
+                        alunoId: cadastroDeAluno.body.id
+                    }
+                );
+            // console.log(cadastroDeAluno.body.id);
+            // console.log(matriculaAluno.body);
 
-        const urlRegistraTrabalho = `/api/alunos/${cadastroDeAluno.body.id}/trabalhos`;
-        // console.log(urlRegistraTrabalho);
-        const novotrabalho = novoTrabalho();
-        // console.log(novotrabalho.titulo);
-        // console.log(novotrabalho.descricao);
+            const urlRegistraTrabalho = `/api/alunos/${cadastroDeAluno.body.id}/trabalhos`;
+            // console.log(urlRegistraTrabalho);  
 
-        const registrarEntregaDoTrabalho = await api()
-            .post(urlRegistraTrabalho)
-            .set('Content-Type', 'application/json')
-            .set('Authorization', await getToken(aluno.email, aluno.senha))
-            .send(
-                {
-                    disciplinaId: matriculaAluno.body.disciplinaId,
-                    titulo: novotrabalho.titulo,
-                    descricao: novotrabalho.descricao
-                }
-            );
-        // console.log(registrarEntregaDoTrabalho.body);
+            const registrarEntregaDoTrabalho = await api()
+                .post(urlRegistraTrabalho)
+                .set('Content-Type', 'application/json')
+                .set('Authorization', await getToken(entregaDeTrabalho.aluno.email, entregaDeTrabalho.aluno.senha))
+                .send(entregaDeTrabalho.trabalho);
+            // console.log(registrarEntregaDoTrabalho.body);
 
-        expect(registrarEntregaDoTrabalho.status).to.equal(201);
-        expect(registrarEntregaDoTrabalho.body.alunoId).to.be.equal(cadastroDeAluno.body.id);
-        expect(registrarEntregaDoTrabalho.body.disciplinaId).to.be.equal(matriculaId);
-        expect(registrarEntregaDoTrabalho.body.titulo).to.be.equal(novotrabalho.titulo);
-        expect(registrarEntregaDoTrabalho.body.descricao).to.be.equal(novotrabalho.descricao);
-        expect(registrarEntregaDoTrabalho.body.status).to.be.equal('entregue');
+            expect(registrarEntregaDoTrabalho.status).to.equal(entregaDeTrabalho.respostaEsperada.statusCodeEsperada);
+            expect(registrarEntregaDoTrabalho.body.alunoId).to.be.equal(cadastroDeAluno.body.id);
+            expect(registrarEntregaDoTrabalho.body.disciplinaId).to.be.equal(entregaDeTrabalho.trabalho.disciplinaId);
+            expect(registrarEntregaDoTrabalho.body.titulo).to.be.equal(entregaDeTrabalho.trabalho.titulo);
+            expect(registrarEntregaDoTrabalho.body.descricao).to.be.equal(entregaDeTrabalho.trabalho.descricao);
+            expect(registrarEntregaDoTrabalho.body.status).to.be.equal(entregaDeTrabalho.respostaEsperada.statusDoTrabalho);
+        });
     });
 });

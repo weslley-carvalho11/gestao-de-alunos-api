@@ -1,0 +1,38 @@
+[
+    {
+        "titulo": "deve entregar o trabalho da Ana",
+        "aluno": {
+            "nome": "Ana",
+            "email": "ana.ferreira@email.com",
+            "matricula": "AF23092026",
+            "senha": "senhaSecreta123"
+        },
+        "trabalho": {
+            "disciplinaId": "disciplina-historia",
+            "titulo": "Título do Trabalho da Ana",
+            "descricao": "Essa é a descrição do trabalho da Ana"
+        },
+        "respostaEsperada": {
+            "statusCodeEsperada": 201,
+            "statusDoTrabalho": "entregue"
+        }
+    },
+        {
+        "titulo": "deve entregar o trabalho da Bryan",
+        "aluno": {
+            "nome": "Bryan",
+            "email": "bryan.souza@email.com",
+            "matricula": "BS23092026",
+            "senha": "senhaSecreta123"
+        },
+        "trabalho": {
+            "disciplinaId": "disciplina-historia",
+            "titulo": "Título do Trabalho do Bryan",
+            "descricao": "Essa é a descrição do trabalho da Bryan"
+        },
+        "respostaEsperada": {
+            "statusCodeEsperada": 201,
+            "statusDoTrabalho": "entregue"
+        }
+    }
+]
